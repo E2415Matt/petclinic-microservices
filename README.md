@@ -1240,11 +1240,11 @@ git push
 
 ```bash
 APP_NAME="Petclinic"
-CFN_KEYPAIR="call-ansible-test-dev.key"
+CFN_KEYPAIR="matt-ansible-test-dev.key"
 PATH="$PATH:/usr/local/bin"
 export ANSIBLE_PRIVATE_KEY_FILE="${WORKSPACE}/${CFN_KEYPAIR}"
 export ANSIBLE_HOST_KEY_CHECKING=False
-export APP_STACK_NAME="Call-$APP_NAME-App-${BUILD_NUMBER}"
+export APP_STACK_NAME="Matt-$APP_NAME-App-${BUILD_NUMBER}"
 # Dev Stack
 sed -i "s/APP_STACK_NAME/$APP_STACK_NAME/" ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml
 cat ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml
@@ -1268,11 +1268,11 @@ ansible-inventory -v -i ./ansible/inventory/dev_stack_swarm_workers_aws_ec2.yaml
 ```bash
 # Test dev dynamic inventory by pinging
 APP_NAME="Petclinic"
-CFN_KEYPAIR="call-ansible-test-dev.key"
+CFN_KEYPAIR="matt-ansible-test-dev.key"
 PATH="$PATH:/usr/local/bin"
 export ANSIBLE_PRIVATE_KEY_FILE="${WORKSPACE}/${CFN_KEYPAIR}"
 export ANSIBLE_HOST_KEY_CHECKING=False
-export APP_STACK_NAME="Call-$APP_NAME-App-${BUILD_NUMBER}"
+export APP_STACK_NAME="Matt-$APP_NAME-App-${BUILD_NUMBER}"
 sed -i "s/APP_STACK_NAME/$APP_STACK_NAME/" ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml
 ansible -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml all -m ping
 ```
@@ -1405,11 +1405,11 @@ git push
 
 ```bash
 APP_NAME="Petclinic"
-CFN_KEYPAIR="call-ansible-test-dev.key"
+CFN_KEYPAIR="matt-ansible-test-dev.key"
 PATH="$PATH:/usr/local/bin"
 export ANSIBLE_PRIVATE_KEY_FILE="${WORKSPACE}/${CFN_KEYPAIR}"
 export ANSIBLE_HOST_KEY_CHECKING=False
-export APP_STACK_NAME="Call-$APP_NAME-App-${BUILD_NUMBER}"
+export APP_STACK_NAME="Matt-$APP_NAME-App-7"
 sed -i "s/APP_STACK_NAME/$APP_STACK_NAME/" ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml
 # Swarm Setup for all nodes (instances)
 ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml -b ./ansible/playbooks/pb_setup_for_all_docker_swarm_instances.yaml
@@ -1426,7 +1426,7 @@ ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml
 ```bash
 PATH="$PATH:/usr/local/bin"
 APP_NAME="Petclinic"
-AWS_STACK_NAME="Call-$APP_NAME-App-${BUILD_NUMBER}"
+AWS_STACK_NAME="Matt-$APP_NAME-App-${BUILD_NUMBER}"
 AWS_REGION="us-east-1"
 aws cloudformation delete-stack --region ${AWS_REGION} --stack-name ${AWS_STACK_NAME}
 ```
@@ -1435,7 +1435,7 @@ aws cloudformation delete-stack --region ${AWS_REGION} --stack-name ${AWS_STACK_
 
 ```bash
 PATH="$PATH:/usr/local/bin"
-CFN_KEYPAIR="call-ansible-test-dev.key"
+CFN_KEYPAIR="matt-ansible-test-dev.key"
 AWS_REGION="us-east-1"
 aws ec2 delete-key-pair --region ${AWS_REGION} --key-name ${CFN_KEYPAIR}
 rm -rf ${CFN_KEYPAIR}
@@ -1447,12 +1447,12 @@ rm -rf ${CFN_KEYPAIR}
 # Environment variables
 PATH="$PATH:/usr/local/bin"
 APP_NAME="Petclinic"
-CFN_KEYPAIR="Call-$APP_NAME-dev-${BUILD_NUMBER}.key"
+CFN_KEYPAIR="Matt-$APP_NAME-dev-${BUILD_NUMBER}.key"
 CFN_TEMPLATE="./infrastructure/dev-docker-swarm-infrastructure-cfn-template.yml"
 AWS_REGION="us-east-1"
 export ANSIBLE_PRIVATE_KEY_FILE="${WORKSPACE}/${CFN_KEYPAIR}"
 export ANSIBLE_HOST_KEY_CHECKING=False
-export APP_STACK_NAME="Call-$APP_NAME-App-${BUILD_NUMBER}"
+export APP_STACK_NAME="Matt-$APP_NAME-App-${BUILD_NUMBER}"
 # Create key pair for Ansible
 aws ec2 create-key-pair --region ${AWS_REGION} --key-name ${CFN_KEYPAIR} --query "KeyMaterial" --output text > ${CFN_KEYPAIR}
 chmod 400 ${CFN_KEYPAIR}
