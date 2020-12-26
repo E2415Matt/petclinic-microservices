@@ -2052,7 +2052,7 @@ mv ${CFN_KEYPAIR} ${JENKINS_HOME}/.ssh/${CFN_KEYPAIR}
 ls -al ${JENKINS_HOME}/.ssh
 ```
 
-- Prepare a script for a Permanent QA Infrastructure with AWS Cloudformation using AWS CLI.
+- Prepare a script for a Permanent QA Infrastructure with AWS Cloudformation using AWS CLI. file name: create-qa-infrastructure-cfn.sh under infrastructure folder
 
 ```bash
 PATH="$PATH:/usr/local/bin"
@@ -2091,7 +2091,7 @@ compose:
   ansible_user: "'ec2-user'"
 ```
 
-- Prepare script to create a `QA` Environment for Release on Docker Swarm using the same playbooks created for `Dev` environment.
+- Prepare script to create a `QA` Environment for Release on Docker Swarm using the same playbooks created for `Dev` environment. file name: qa_deploy_app_on_docker_swarm.sh under ansible/script folder.
 
 ```bash
 PATH="$PATH:/usr/local/bin"
