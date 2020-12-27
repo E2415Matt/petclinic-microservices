@@ -2566,6 +2566,7 @@ docker image prune -af
 - Commit the change, then push the script to the remote repo.
 
 ```bash
+git branch
 git add .
 git commit -m 'added script for jenkins job to build and deploy app on QA environment'
 git push --set-upstream origin feature/msp-20
