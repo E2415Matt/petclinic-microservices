@@ -209,6 +209,7 @@ chmod +x /usr/local/bin/docker-compose
 yum install git -y
 yum install java-11-amazon-corretto -y
 git clone https://github.com/clarusway/petclinic-microservices.git
+cd petclinic-microservices
 git fetch
 git checkout dev
 ```
@@ -725,6 +726,7 @@ APP_IP = os.environ['MASTER_PUBLIC_IP']
 url = "http://"+APP_IP.strip()+":8080/"
 print(url)
 driver.get(url)
+sleep(3)
 owners_link = driver.find_element_by_link_text("OWNERS")
 owners_link.click()
 sleep(2)
@@ -787,9 +789,9 @@ fn_field = driver.find_element_by_name('telephone')
 fn_field.send_keys('+1230576803')
 sleep(1)
 fn_field.send_keys(Keys.ENTER)
-sleep(1)
-# Wait 2 second to get updated Owner List
-sleep(2)
+
+# Wait 10 seconds to get updated Owner List
+sleep(10)
 # Verify that new user is added to Owner List
 if fn in driver.page_source:
     print(fn, 'is added and found in the Owners Table')
@@ -824,11 +826,12 @@ APP_IP = os.environ['MASTER_PUBLIC_IP']
 url = "http://"+APP_IP.strip()+":8080/"
 print(url)
 driver.get(url)
+sleep(3)
 vet_link = driver.find_element_by_link_text("VETERINARIANS")
 vet_link.click()
 
 # Verify that table loaded
-sleep(1)
+sleep(5)
 verify_table = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "table")))
 
 print("Table loaded")
@@ -1062,7 +1065,7 @@ git branch feature/msp-16
 git checkout feature/msp-16
 ```
 
-- Prepare a Cloudformation template for Docker Swarm Infrastructure consisting of 3 Managers, 2 Worker Instances and save it as `docker-swarm-infrastructure-cfn-template.yml` under `infrastructure` folder.
+- Prepare a Cloudformation template for Docker Swarm Infrastructure consisting of 3 Managers, 2 Worker Instances and save it as `dev-docker-swarm-infrastructure-cfn-template.yml` under `infrastructure` folder.
 
 - Grant permissions to Docker Machines within Cloudformation template to create ECR Registry, push or pull Docker images to/from ECR Repo.
 
@@ -1112,7 +1115,7 @@ PATH="$PATH:/usr/local/bin"
 APP_NAME="Petclinic"
 APP_STACK_NAME="Matt-$APP_NAME-App-${BUILD_NUMBER}"
 CFN_KEYPAIR="matt-ansible-test-dev.key"
-CFN_TEMPLATE="./infrastructure/docker-swarm-infrastructure-cfn-template.yml"
+CFN_TEMPLATE="./infrastructure/dev-docker-swarm-infrastructure-cfn-template.yml"
 AWS_REGION="us-east-1"
 aws cloudformation create-stack --region ${AWS_REGION} --stack-name ${APP_STACK_NAME} --capabilities CAPABILITY_IAM --template-body file://${CFN_TEMPLATE} --parameters ParameterKey=KeyPairName,ParameterValue=${CFN_KEYPAIR}
 ```
@@ -1409,7 +1412,7 @@ CFN_KEYPAIR="matt-ansible-test-dev.key"
 PATH="$PATH:/usr/local/bin"
 export ANSIBLE_PRIVATE_KEY_FILE="${WORKSPACE}/${CFN_KEYPAIR}"
 export ANSIBLE_HOST_KEY_CHECKING=False
-export APP_STACK_NAME="Matt-$APP_NAME-App-7"
+export APP_STACK_NAME="Matt-$APP_NAME-App-${BUILD_NUMBER}"
 sed -i "s/APP_STACK_NAME/$APP_STACK_NAME/" ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml
 # Swarm Setup for all nodes (instances)
 ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml -b ./ansible/playbooks/pb_setup_for_all_docker_swarm_instances.yaml
@@ -1501,7 +1504,7 @@ git branch feature/msp-17
 git checkout feature/msp-17
 ```
 
-- Prepare a script to create ECR tags for the dev docker images and save it as `package-with-maven-container.sh` and save it under `jenkins` folder.
+- Prepare a script to package the app with maven Docker container and save it as `package-with-maven-container.sh` and save it under `jenkins` folder.
 
 ```bash
 docker run --rm -v $HOME/.m2:/root/.m2 -v $WORKSPACE:/app -w /app maven:3.6-openjdk-11 mvn clean package
@@ -1548,7 +1551,8 @@ docker build --force-rm -t "${IMAGE_TAG_PROMETHEUS_SERVICE}" "${WORKSPACE}/docke
 - Prepare a script to push the dev docker images to the ECR repo and save it as `push-dev-docker-images-to-ecr.sh` and save it under `jenkins` folder.
 
 ```bash
-aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+# Provide credentials for Docker to login the AWS ECR and push the images
+aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY} 
 docker push "${IMAGE_TAG_ADMIN_SERVER}"
 docker push "${IMAGE_TAG_API_GATEWAY}"
 docker push "${IMAGE_TAG_CONFIG_SERVER}"
@@ -1568,6 +1572,32 @@ git add .
 git commit -m 'added scripts for qa automation environment'
 git push --set-upstream origin feature/msp-17
 ```
+
+  - OPTIONAL: Create a Jenkins job with the name of `test-msp-17-scripts` to test the scripts:   
+      * Select `Freestyle project` and click `OK`
+      * Select github project and write the url to your repository's page into `Project url` (https://github.com/[your-github-account]/petclinic-microservices)
+      * Under the `Source Code Management` select `Git` 
+      * Write the url of your repository into the `Repository URL` (https://github.com/[your-github-account]/petclinic-microservices.git)
+      * Add `*/feature/msp-17` branch to `Branches to build`
+      * Click `Add build step` under `Build` and select `Execute Shell`
+      * Write below script into the `Command`
+        ```bash
+        PATH="$PATH:/usr/local/bin"
+        APP_REPO_NAME="clarusway-repo/petclinic-app-dev" # Write your own repo name
+        AWS_REGION="us-east-1" #Update this line if you work on another region
+        ECR_REGISTRY="046402772087.dkr.ecr.us-east-1.amazonaws.com" # Replace this line with your ECR name
+        aws ecr create-repository \
+            --repository-name ${APP_REPO_NAME} \
+            --image-scanning-configuration scanOnPush=false \
+            --image-tag-mutability MUTABLE \
+            --region ${AWS_REGION}
+        . ./jenkins/package-with-maven-container.sh
+        . ./jenkins/prepare-tags-ecr-for-dev-docker-images.sh
+        . ./jenkins/build-dev-docker-images-for-ecr.sh
+        . ./jenkins/push-dev-docker-images-to-ecr.sh
+        ```
+      * Click `Save`
+      * Click `Build now` to manually start the job.
 
 - Prepare a docker compose file for swarm deployment and save it as `docker-compose-swarm-dev.yml`.
 
@@ -1797,7 +1827,7 @@ git push --set-upstream origin feature/msp-17
 
 - Create a Jenkins job with name of `test-running-dummy-selenium-job` to check the setup for selenium tests by running dummy selenium job on `feature/msp-17` branch.
 
-- Create Ansible playbook for running all selenium jobs under ``selenium-jobs` folder and save it as `pb_run_selenium_jobs.yaml` under `ansible/playbooks` folder.
+- Create Ansible playbook for running all selenium jobs under `selenium-jobs` folder and save it as `pb_run_selenium_jobs.yaml` under `ansible/playbooks` folder.
 
 ```yaml
 ---
@@ -1819,11 +1849,6 @@ git push --set-upstream origin feature/msp-17
 PATH="$PATH:/usr/local/bin"
 ansible-playbook -vvv --connection=local --inventory 127.0.0.1, --extra-vars "workspace=${WORKSPACE} master_public_ip=${GRAND_MASTER_PUBLIC_IP}" ./ansible/playbooks/pb_run_selenium_jobs.yaml
 ```
-
-- Update the selenium jobs to get `Docker Grand Master Pubic IP` address as environment variable.
-
-- Create a Jenkins pipeline with name of `petclinic-nightly` with following script to run QA automation tests and configure a `cron job` to trigger the pipeline every night at midnight (`0 0 * * *`) on `dev` branch. Petclinic nightly build pipeline should be built on temporary QA automation environment.
-
 - Prepare a Jenkinsfile for `petclinic-nightly` builds and save it as `jenkinsfile-petclinic-nightly` under `jenkins` folder.
 
 ```groovy
@@ -2012,6 +2037,8 @@ pipeline {
 }
 ```
 
+- Create a Jenkins pipeline with name of `petclinic-nightly` with following script to run QA automation tests and configure a `cron job` to trigger the pipeline every night at midnight (`0 0 * * *`) on `dev` branch. Petclinic nightly build pipeline should be built on temporary QA automation environment.
+
 - Commit the change, then push the script to the remote repo.
 
 ```bash
@@ -2024,7 +2051,6 @@ git push origin dev
 ```
 
 ## MSP 18 - Create a QA Environment on Docker Swarm with Cloudformation and Ansible
-
 
 - Create `feature/msp-18` branch from `dev`.
 
@@ -2052,7 +2078,7 @@ mv ${CFN_KEYPAIR} ${JENKINS_HOME}/.ssh/${CFN_KEYPAIR}
 ls -al ${JENKINS_HOME}/.ssh
 ```
 
-- Prepare a script for a Permanent QA Infrastructure with AWS Cloudformation using AWS CLI. file name: create-qa-infrastructure-cfn.sh under infrastructure folder
+- Prepare a script with the name of `create-qa-infrastructure-cfn.sh` for a Permanent QA Infrastructure with AWS Cloudformation using AWS CLI under `infrastructure` folder.
 
 ```bash
 PATH="$PATH:/usr/local/bin"
@@ -2091,7 +2117,7 @@ compose:
   ansible_user: "'ec2-user'"
 ```
 
-- Prepare script to create a `QA` Environment for Release on Docker Swarm using the same playbooks created for `Dev` environment. file name: qa_deploy_app_on_docker_swarm.sh under ansible/script folder.
+- Prepare script with the name of `qa_build_deploy_environment.sh` to create a `QA` Environment for Release on Docker Swarm using the same playbooks created for `Dev` environment under `ansible/scripts` folder.
 
 ```bash
 PATH="$PATH:/usr/local/bin"
@@ -2184,9 +2210,6 @@ pipeline {
     }
 }
 ```
-
-- Create a pipeline on Jenkins Server with name of `create-qa-environment-on-docker-swarm` and create QA environment manually on `dev` branch.
-
 - Commit the change, then push the scripts to the remote repo.
 
 ```bash
@@ -2197,6 +2220,7 @@ git checkout dev
 git merge feature/msp-18
 git push origin dev
 ```
+- Create a pipeline on Jenkins Server with name of `create-qa-environment-on-docker-swarm` and create QA environment manually on `dev` branch.
 
 ## MSP 19 - Prepare Build Scripts for QA Environment
 
@@ -2212,7 +2236,7 @@ git checkout feature/msp-19
 
 ```bash
 PATH="$PATH:/usr/local/bin"
-APP_REPO_NAME="clarusway-repo/petclinic-app-qa"
+APP_REPO_NAME="matt-repo/petclinic-app-qa"
 AWS_REGION="us-east-1"
 
 aws ecr create-repository \
