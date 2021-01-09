@@ -3295,8 +3295,8 @@ rke --version
 
 ```yaml
 nodes:
-  - address: 3.237.46.200
-    internal_address: 172.31.67.23
+  - address: 3.237.46.200 # ec2 intance public ip address
+    internal_address: 172.31.67.23 # ec2 instance private ip address
     user: ubuntu
     role: [controlplane, worker, etcd]
 

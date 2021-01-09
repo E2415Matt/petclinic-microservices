@@ -1,6 +1,6 @@
 nodes:
-  - address: 3.239.88.251
-    internal_address: 172.31.65.78
+  - address: 172.31.64.97 # ec2 instance public ip address
+    internal_address: 172.31.64.97 # ec2 instance private ip address
     user: ubuntu
     role: [controlplane, worker, etcd]
 
