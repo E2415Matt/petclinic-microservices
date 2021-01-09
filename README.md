@@ -3295,8 +3295,8 @@ rke --version
 
 ```yaml
 nodes:
-  - address: 3.237.46.200
-    internal_address: 172.31.67.23
+  - address: 3.237.46.200 # public ip addres of jenkins-server
+    internal_address: 172.31.67.23 # private ip addres of jenkins-server 
     user: ubuntu
     role: [controlplane, worker, etcd]
 
@@ -3321,6 +3321,12 @@ ingress:
 ```bash
 rke up --config ./rancher-cluster.yml
 ```
+EC2 instances are stopped since last use therefore we need to update the related ip info on the config file, remove existing cluster and rebuild the cluster after updating records.
+
+cd /petclinic-microservices/infrastructure
+rke remove --config ./rancher-cluster.yml
+update rancher-cluster.yml file with rancher-cluster-instance private ip address
+rke up --config ./rancher-cluster.yml
 
 * Check if the RKE Kubernetes Cluster created successfully.
 
@@ -3370,7 +3376,7 @@ kubectl create namespace cattle-system
 ```bash
 helm install rancher rancher-latest/rancher \
   --namespace cattle-system \
-  --set hostname=rancher.clarusway.us \
+  --set hostname=rancher.mattaltun.co.uk \
   --set tls=external \
   --set replicas=1
 ```
@@ -3384,9 +3390,9 @@ kubectl -n cattle-system get pods
 
 ## MSP 25 - Create Staging and Production Environment with Rancher
 
-* To provide access of Rancher to the cloud resources, create a `Cloud Credentials` for AWS on Rancher and name it as `Call-AWS-Training-Account`.
+* To provide access of Rancher to the cloud resources, create a `Cloud Credentials` for AWS on Rancher and name it as `Matt-AWS-Training-Account`.
 
-* Create a `Node Template` on Rancher with following configuration for to be used while launching the EC2 instances and name it as `Call-AWS-RancherOs-Template`.
+* Create a `Node Template` on Rancher with following configuration for to be used while launching the EC2 instances and name it as `Matt-AWS-RancherOs-Template`.
 
 ```text
 Region            : us-east-1
@@ -3903,7 +3909,7 @@ spec:
     server: https://acme-v02.api.letsencrypt.org/directory
     preferredChain: "ISRG Root X1"
     # Email address used for ACME registration
-    email: callahan@clarusway.com
+    email: ivymatt2017@gmail.com
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt-prod
