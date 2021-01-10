@@ -1,6 +1,11 @@
 nodes:
+<<<<<<< HEAD
   - address: 172.31.65.78
     internal_address: 172.31.65.78
+=======
+  - address: 172.31.64.97 # ec2 instance public ip address
+    internal_address: 172.31.64.97 # ec2 instance private ip address
+>>>>>>> feature/msp-26
     user: ubuntu
     role: [controlplane, worker, etcd]
 

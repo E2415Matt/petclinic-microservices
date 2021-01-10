@@ -1010,7 +1010,7 @@ git push origin dev
 
 ``` bash
 PATH="$PATH:/usr/local/bin"
-APP_REPO_NAME="clarusway-repo/petclinic-app-dev"
+APP_REPO_NAME="matt-repo/petclinic-app-dev"
 AWS_REGION="us-east-1"
 
 aws ecr create-repository \
@@ -1034,7 +1034,7 @@ git checkout feature/msp-15
 
 ``` bash
 PATH="$PATH:/usr/local/bin"
-APP_REPO_NAME="clarusway-repo/petclinic-app-dev"
+APP_REPO_NAME="matt-repo/petclinic-app-dev"
 AWS_REGION="us-east-1"
 
 aws ecr create-repository \
@@ -1583,7 +1583,7 @@ git push --set-upstream origin feature/msp-17
       * Write below script into the `Command`
         ```bash
         PATH="$PATH:/usr/local/bin"
-        APP_REPO_NAME="clarusway-repo/petclinic-app-dev" # Write your own repo name
+        APP_REPO_NAME="matt-repo/petclinic-app-dev" # Write your own repo name
         AWS_REGION="us-east-1" #Update this line if you work on another region
         ECR_REGISTRY="046402772087.dkr.ecr.us-east-1.amazonaws.com" # Replace this line with your ECR name
         aws ecr create-repository \
@@ -2603,7 +2603,7 @@ pipeline {
     environment {
         PATH=sh(script:"echo $PATH:/usr/local/bin", returnStdout:true).trim()
         APP_NAME="petclinic"
-        APP_REPO_NAME="clarusway-repo/petclinic-app-qa"
+        APP_REPO_NAME="matt-repo/petclinic-app-qa"
         APP_STACK_NAME="Matt-petclinic-App-QA-1"
         CFN_KEYPAIR="matt-petclinic-qa.key"
         AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
@@ -2729,7 +2729,7 @@ services:
     - 8081:8081
     labels:
       kompose.image-pull-secret: "regcred"
-      kompose.service.expose: "petclinic04.clarusway.us"
+      kompose.service.expose: "petclinic04.mattaltun.co.uk"
   visits-service:
     image: IMAGE_TAG_VISITS_SERVICE
     deploy:
@@ -2738,7 +2738,7 @@ services:
      - 8082:8082
     labels:
       kompose.image-pull-secret: "regcred"
-      kompose.service.expose: "petclinic04.clarusway.us"
+      kompose.service.expose: "petclinic04.mattaltun.co.uk"
   vets-service:
     image: IMAGE_TAG_VETS_SERVICE
     deploy:
@@ -2747,7 +2747,7 @@ services:
      - 8083:8083
     labels:
       kompose.image-pull-secret: "regcred"
-      kompose.service.expose: "petclinic04.clarusway.us"
+      kompose.service.expose: "petclinic04.mattaltun.co.uk"
   api-gateway:
     image: IMAGE_TAG_API_GATEWAY
     deploy:
@@ -2756,7 +2756,7 @@ services:
      - 8080:8080
     labels:
       kompose.image-pull-secret: "regcred"
-      kompose.service.expose: "petclinic04.clarusway.us"
+      kompose.service.expose: "petclinic04.mattaltun.co.uk"
   tracing-server:
     image: openzipkin/zipkin
     environment:
@@ -2829,7 +2829,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-  - host: petclinic.clarusway.us
+  - host: petclinic.mattaltun.co.uk
     http:
       paths:
       - backend:
@@ -2852,7 +2852,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-  - host: petclinic.clarusway.us
+  - host: petclinic.mattaltun.co.uk
     http:
       paths:
       - backend:
@@ -2870,7 +2870,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-  - host: petclinic.clarusway.us
+  - host: petclinic.mattaltun.co.uk
     http:
       paths:
       - backend:
@@ -2961,7 +2961,7 @@ metadata:
   name: api-gateway
 spec:
   rules:
-    - host: petclinic.clarusway.us
+    - host: petclinic.mattaltun.co.uk
       http:
         paths:
           - backend:
@@ -2975,7 +2975,7 @@ metadata:
   name: customers-service
 spec:
   rules:
-  - host: petclinic.clarusway.us
+  - host: petclinic.mattaltun.co.uk
     http:
       paths:
       - backend:
@@ -2996,7 +2996,7 @@ metadata:
   name: vets-service
 spec:
   rules:
-  - host: petclinic.clarusway.us
+  - host: petclinic.mattaltun.co.uk
     http:
       paths:
       - backend:
@@ -3012,7 +3012,7 @@ metadata:
   name: visits-service
 spec:
   rules:
-  - host: petclinic.clarusway.us
+  - host: petclinic.mattaltun.co.uk
     http:
       paths:
       - backend:
@@ -3216,21 +3216,21 @@ git checkout feature/msp-23
 
     * Allow TCP on port 2376 to any node IP from a node created using Node Driver for Docker machine TLS port.
 
-  * Allow all protocol on all port from `call-rke-cluster-sg` for self communication between Rancher `controlplane`, `etcd`, `worker` nodes.
+  * Allow all protocol on all port from `matt-rke-cluster-sg` for self communication between Rancher `controlplane`, `etcd`, `worker` nodes.
 
-* Log into Jenkins Server and create `call-rancher.key` key-pair for Rancher Server using AWS CLI
+* Log into Jenkins Server and create `matt-rancher.key` key-pair for Rancher Server using AWS CLI
   
 ```bash
-aws ec2 create-key-pair --region us-east-1 --key-name call-rancher.key --query KeyMaterial --output text > ~/.ssh/call-rancher.key
-chmod 400 ~/.ssh/call-rancher.key
+aws ec2 create-key-pair --region us-east-1 --key-name matt-rancher.key --query KeyMaterial --output text > ~/.ssh/matt-rancher.key
+chmod 400 ~/.ssh/matt-rancher.key
 ```
 
-* Launch an EC2 instance using `Ubuntu Server 20.04 LTS (HVM) ami-0885b1f6bd170450c  (64-bit x86)` with `t2.medium` type, 16 GB root volume,  `call-rke-cluster-sg` security group, `call-rke-role` IAM Role, `Name:Call-Rancher-Cluster-Instance` tag and `call-rancher.key` key-pair. Take note of `subnet id` of EC2. 
+* Launch an EC2 instance using `Ubuntu Server 20.04 LTS (HVM) ami-0885b1f6bd170450c  (64-bit x86)` with `t2.medium` type, 16 GB root volume,  `matt-rke-cluster-sg` security group, `matt-rke-role` IAM Role, `Name:Matt-Rancher-Cluster-Instance` tag and `matt-rancher.key` key-pair. Take note of `subnet id` of EC2. 
 
-* Attach a tag to the `nodes (intances)`, `subnets` and `security group` for Rancher with `Key = kubernetes.io/cluster/Call-Rancher` and `Value = owned`.
+* Attach a tag to the `nodes (intances)`, `subnets` and `security group` for Rancher with `Key = kubernetes.io/cluster/Matt-Rancher` and `Value = owned`.
   
   
-* Log into `Call-Rancher-Cluster-Instance` from Jenkins Server (Bastion host) and install Docker using the following script.
+* Log into `Matt-Rancher-Cluster-Instance` from Jenkins Server (Bastion host) and install Docker using the following script.
 
 ```bash
 # Set hostname of instance
@@ -3247,7 +3247,7 @@ sudo usermod -aG docker ubuntu
 newgrp docker
 ```
 
-* Create a target groups with name of `call-rancher-http-80-tg` with following setup and add the `rancher instances` to it.
+* Create a target groups with name of `matt-rancher-http-80-tg` with following setup and add the `rancher instances` to it.
 
 ```bash
 Target type         : instance
@@ -3265,7 +3265,7 @@ Interval            : 10 seoconds
 Success             : 200
 ```
 
-* Create Application Load Balancer with name of `call-rancher-alb` using `call-rke-alb-sg` security group with following settings and add `call-rancher-http-80-tg` target group to it.
+* Create Application Load Balancer with name of `matt-rancher-alb` using `matt-rke-alb-sg` security group with following settings and add `matt-rancher-http-80-tg` target group to it.
 
 ```text
 Scheme              : internet-facing
@@ -3275,12 +3275,12 @@ IP address type     : ipv4
 Protocol            : HTTPS/HTTP
 Port                : 443/80
 Availability Zones  : Select AZs of RKE instances
-Target group        : `call-rancher-http-80-tg` target group 
+Target group        : `matt-rancher-http-80-tg` target group 
 ```
 
 * Configure ALB Listener of HTTP on `Port 80` to redirect traffic to HTTPS on `Port 443`.
 
-* Create DNS A record for `rancher.clarusway.us` and attach the `call-rancher-alb` application load balancer to it.
+* Create DNS A record for `rancher.mattaltun.co.uk` and attach the `matt-rancher-alb` application load balancer to it.
 
 * Install RKE, the Rancher Kubernetes Engine, [Kubernetes distribution and command-line tool](https://rancher.com/docs/rke/latest/en/installation/)) on Jenkins Server.
 
@@ -3295,8 +3295,13 @@ rke --version
 
 ```yaml
 nodes:
+<<<<<<< HEAD
   - address: 3.237.46.200 # public ip addres of jenkins-server
     internal_address: 172.31.67.23 # private ip addres of jenkins-server 
+=======
+  - address: 3.237.46.200 # ec2 intance public ip address
+    internal_address: 172.31.67.23 # ec2 instance private ip address
+>>>>>>> feature/msp-26
     user: ubuntu
     role: [controlplane, worker, etcd]
 
@@ -3306,7 +3311,7 @@ services:
     creation: 6h
     retention: 24h
 
-ssh_key_path: ~/.ssh/call-rancher.key
+ssh_key_path: ~/.ssh/matt-rancher.key
 
 # Required for external TLS termination with
 # ingress-nginx v0.22+
@@ -3432,7 +3437,7 @@ git checkout feature/msp-26
 
 ``` bash
 PATH="$PATH:/usr/local/bin"
-APP_REPO_NAME="clarusway-repo/petclinic-app-staging"
+APP_REPO_NAME="matt-repo/petclinic-app-staging"
 AWS_REGION="us-east-1"
 
 aws ecr create-repository \
@@ -3495,6 +3500,7 @@ docker push "${IMAGE_TAG_VISITS_SERVICE}"
 docker push "${IMAGE_TAG_GRAFANA_SERVICE}"
 docker push "${IMAGE_TAG_PROMETHEUS_SERVICE}"
 ```
+# i am here -
 
 * Install `Rancher CLI` on Jenkins Server.
 
@@ -3520,11 +3526,11 @@ pipeline {
     environment {
         PATH=sh(script:"echo $PATH:/usr/local/bin", returnStdout:true).trim()
         APP_NAME="petclinic"
-        APP_REPO_NAME="clarusway-repo/petclinic-app-staging"
+        APP_REPO_NAME="matt-repo/petclinic-app-staging"
         AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
         AWS_REGION="us-east-1"
         ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        RANCHER_URL="https://rancher.clarusway.us"
+        RANCHER_URL="https://rancher.mattaltun.co.uk"
         // Get the project-id from Rancher UI
         RANCHER_CONTEXT="petclinic-cluster:project-id" 
         RANCHER_CREDS=credentials('rancher-petclinic-credentials')
@@ -3623,7 +3629,7 @@ git checkout feature/msp-27
 
 ``` bash
 PATH="$PATH:/usr/local/bin"
-APP_REPO_NAME="clarusway-repo/petclinic-app-prod"
+APP_REPO_NAME="matt-repo/petclinic-app-prod"
 AWS_REGION="us-east-1"
 
 aws ecr create-repository \
@@ -3697,13 +3703,13 @@ pipeline {
     environment {
         PATH=sh(script:"echo $PATH:/usr/local/bin", returnStdout:true).trim()
         APP_NAME="petclinic"
-        APP_REPO_NAME="clarusway-repo/petclinic-app-prod"
+        APP_REPO_NAME="matt-repo/petclinic-app-prod"
         AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
         AWS_REGION="us-east-1"
         ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        RANCHER_URL="https://rancher.clarusway.us"
+        RANCHER_URL="https://rancher.mattaltun.co.uk"
         // Get the project-id from Rancher UI
-        RANCHER_CONTEXT="c-rclgv:p-z8lsg"
+        RANCHER_CONTEXT="c-rclgv:p-z8lsg" 
         RANCHER_CREDS=credentials('rancher-petclinic-credentials')
     }
     stages {
@@ -3837,11 +3843,11 @@ Target group        : `matt-petclinic-http-443-tg` target group
 
 * Configure ALB Listener of HTTP on `Port 80` to redirect traffic to HTTPS on `Port 443`.
 
-* Create DNS A record for `rancher.clarusway.us` and 
+* Create DNS A record for `rancher.mattaltun.co.uk` and 
 
-* Create an `A` record of `petclinic003.clarusway.us` in your hosted zone (in our case `clarusway.us`) using AWS Route 53 domain registrar and attach the `matt-petclinic-alb` application load balancer to it.
+* Create an `A` record of `petclinic003.mattaltun.co.uk` in your hosted zone (in our case `mattaltun.co.uk`) using AWS Route 53 domain registrar and attach the `matt-petclinic-alb` application load balancer to it.
 
-* Configure TLS(SSL) certificate for `petclinic003.clarusway.us` using `cert-manager` on petclinic K8s cluster with the following steps.
+* Configure TLS(SSL) certificate for `petclinic003.mattaltun.co.uk` using `cert-manager` on petclinic K8s cluster with the following steps.
 
 * Log into Jenkins Server and configure the `kubectl` to connect to petclinic cluster by getting the `Kubeconfig` file from Rancher and save it as `$HOME/.kube/config` or set `KUBECONFIG` environment variable.
 
@@ -3938,11 +3944,11 @@ metadata:
 spec:
   tls:
   - hosts:
-    - petclinic.clarusway.us
+    - petclinic.mattaltun.co.uk
     secretName: petclinic-tls
 ```
 
-* Check and verify that the TLS(SSL) certificate created and successfully issued to `petclinic.clarusway.us` by checking URL of `https://petclinic.clarusway.us`
+* Check and verify that the TLS(SSL) certificate created and successfully issued to `petclinic.mattaltun.co.uk` by checking URL of `https://petclinic.mattaltun.co.uk`
 
 * Commit the change, then push the tls script to the remote repo.
 
