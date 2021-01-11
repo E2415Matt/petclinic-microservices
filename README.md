@@ -160,7 +160,7 @@ git branch feature/msp-4
 git checkout feature/msp-4
 ```
 
-* Prepare a script to package the application with maven wrapper and save it as `package-with-mvn-wrapper.sh`.
+* Prepare a script to package the application with maven wrapper and save it as `package-with-mvn-wrapper.sh` under `petclinic-microservices` folder.
 
 ``` bash
 ./mvnw clean package
@@ -376,7 +376,7 @@ git branch feature/msp-7
 git checkout feature/msp-7
 ```
 
-* Prepare a script to build the docker images and save it as `build-dev-docker-images.sh`.
+* Prepare a script to build the docker images and save it as `build-dev-docker-images.sh` under `petclinic-microservices` folder.
 
 ``` bash
 ./mvnw clean package
@@ -425,7 +425,7 @@ git branch feature/msp-8
 git checkout feature/msp-8
 ```
 
-* Prepare docker compose file to deploy the application locally and save it as `docker-compose-local.yml`.
+* Prepare docker compose file to deploy the application locally and save it as `docker-compose-local.yml` under `petclinic-microservices` folder.
 
 ``` yaml
 version: '2'
@@ -540,7 +540,7 @@ services:
     - 9091:9090
 ```
 
-* Prepare a script to test the deployment of the app locally with `docker-compose-local.yml` and save it as `test-local-deployment.sh`.
+* Prepare a script to test the deployment of the app locally with `docker-compose-local.yml` and save it as `test-local-deployment.sh` under `petclinic-microservices` folder.
 
 ``` bash
 docker-compose -f docker-compose-local.yml up
@@ -2566,7 +2566,6 @@ docker image prune -af
 - Commit the change, then push the script to the remote repo.
 
 ```bash
-git branch
 git add .
 git commit -m 'added script for jenkins job to build and deploy app on QA environment'
 git push --set-upstream origin feature/msp-20
@@ -2729,7 +2728,7 @@ services:
     - 8081:8081
     labels:
       kompose.image-pull-secret: "regcred"
-      kompose.service.expose: "petclinic04.mattaltun.co.uk"
+      kompose.service.expose: "petclinic.mattaltun.co.uk"
   visits-service:
     image: IMAGE_TAG_VISITS_SERVICE
     deploy:
@@ -2738,7 +2737,7 @@ services:
      - 8082:8082
     labels:
       kompose.image-pull-secret: "regcred"
-      kompose.service.expose: "petclinic04.mattaltun.co.uk"
+      kompose.service.expose: "petclinic.mattaltun.co.uk"
   vets-service:
     image: IMAGE_TAG_VETS_SERVICE
     deploy:
@@ -2747,7 +2746,7 @@ services:
      - 8083:8083
     labels:
       kompose.image-pull-secret: "regcred"
-      kompose.service.expose: "petclinic04.mattaltun.co.uk"
+      kompose.service.expose: "petclinic.mattaltun.co.uk"
   api-gateway:
     image: IMAGE_TAG_API_GATEWAY
     deploy:
@@ -2756,7 +2755,7 @@ services:
      - 8080:8080
     labels:
       kompose.image-pull-secret: "regcred"
-      kompose.service.expose: "petclinic04.mattaltun.co.uk"
+      kompose.service.expose: "petclinic.mattaltun.co.uk"
   tracing-server:
     image: openzipkin/zipkin
     environment:
@@ -2836,12 +2835,10 @@ spec:
           serviceName: customers-service
           servicePort: 8081
         path: /api/gateway(/|$)(.*)
-        pathType: ImplementationSpecific
       - backend:
           serviceName: customers-service
           servicePort: 8081
         path: /api/customer(/|$)(.*)
-        pathType: ImplementationSpecific
 ```
 
 * Update `visits-service-ingress.yaml` file with following setup to pass the api requests to `visits service` microservice.
@@ -2859,7 +2856,6 @@ spec:
           serviceName: visits-service
           servicePort: 8082
         path: /api/visit(/|$)(.*)
-        pathType: ImplementationSpecific
 ```
 
 * Update `vets-service-ingress.yaml` file with following setup to pass the api requests to `vets service` microservice.
@@ -2877,7 +2873,6 @@ spec:
           serviceName: vets-service
           servicePort: 8083
         path: /api/vet(/|$)(.*)
-        pathType: ImplementationSpecific
 ```
 
 * Create `kustomization-template.yml` file with following content and save under `k8s/base` folder.
@@ -2982,12 +2977,10 @@ spec:
           serviceName: customers-service
           servicePort: 8081
         path: /api/gateway(/|$)(.*)
-        pathType: ImplementationSpecific
       - backend:
           serviceName: customers-service
           servicePort: 8081
         path: /api/customer(/|$)(.*)
-        pathType: ImplementationSpecific
 
 ---
 apiVersion: extensions/v1beta1
@@ -3003,7 +2996,6 @@ spec:
           serviceName: vets-service
           servicePort: 8083
         path: /api/vet(/|$)(.*)
-        pathType: ImplementationSpecific
 
 ---
 apiVersion: extensions/v1beta1
@@ -3019,7 +3011,6 @@ spec:
           serviceName: visits-service
           servicePort: 8082
         path: /api/visit(/|$)(.*)
-        pathType: ImplementationSpecific
 ```
 
 * Create `kustomization.yml` and `replica-count.yml` files for production envrionment and save them under `k8s/prod` folder.
@@ -3083,6 +3074,7 @@ git checkout release
 git merge feature/msp-22
 git push origin release
 ```
+
 ## MSP 23 - Prepare High-availability RKE Kubernetes Cluster on AWS EC2
 
 * Create `feature/msp-23` branch from `release`.
@@ -3280,7 +3272,7 @@ Target group        : `matt-rancher-http-80-tg` target group
 
 * Configure ALB Listener of HTTP on `Port 80` to redirect traffic to HTTPS on `Port 443`.
 
-* Create DNS A record for `rancher.mattaltun.co.uk` and attach the `matt-rancher-alb` application load balancer to it.
+* Create DNS A record for `petclinic.mattaltun.co.uk` and attach the `matt-rancher-alb` application load balancer to it.
 
 * Install RKE, the Rancher Kubernetes Engine, [Kubernetes distribution and command-line tool](https://rancher.com/docs/rke/latest/en/installation/)) on Jenkins Server.
 
@@ -3295,8 +3287,8 @@ rke --version
 
 ```yaml
 nodes:
-  - address: 3.237.46.200 # ec2 intance public ip address
-    internal_address: 172.31.67.23 # ec2 instance private ip address
+  - address: 3.237.46.200
+    internal_address: 172.31.67.23
     user: ubuntu
     role: [controlplane, worker, etcd]
 
@@ -3398,20 +3390,6 @@ SSH User          : rancher
 Label             : os=rancheros
 ```
 
-* Create a Kubernetes cluster using Rancher with RKE and new nodes in AWS (on one EC2 instance only) and name it as `petclinic-cluster`.
-
-```text
-Cluster Type      : Amazon EC2
-Name Prefix       : petclinic-k8s-instance
-Count             : 1
-etcd              : checked
-Control Plane     : checked
-Worker            : checked
-```
-
-* Create `petclinic-staging-ns` and `petclinic-prod-ns` namespaces on `petclinic-cluster` with Rancher.
-
-
 ## MSP 26 - Prepare a Staging Pipeline
 
 * Create `feature/msp-26` branch from `release`.
@@ -3421,6 +3399,19 @@ git checkout release
 git branch feature/msp-26
 git checkout feature/msp-26
 ```
+
+* Create a Kubernetes cluster using Rancher with RKE and new nodes in AWS  and name it as `petclinic-cluster-staging`.
+
+```text
+Cluster Type      : Amazon EC2
+Name Prefix       : petclinic-k8s-instance
+Count             : 3
+etcd              : checked
+Control Plane     : checked
+Worker            : checked
+```
+
+* Create `petclinic-staging-ns` namespace on `petclinic-cluster-staging` with Rancher.
 
 * Create a Jenkins Job and name it as `create-ecr-docker-registry-for-petclinic-staging` to create Docker Registry for `Staging` manually on AWS ECR.
 
@@ -3489,7 +3480,6 @@ docker push "${IMAGE_TAG_VISITS_SERVICE}"
 docker push "${IMAGE_TAG_GRAFANA_SERVICE}"
 docker push "${IMAGE_TAG_PROMETHEUS_SERVICE}"
 ```
-# i am here -
 
 * Install `Rancher CLI` on Jenkins Server.
 
@@ -3519,9 +3509,9 @@ pipeline {
         AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
         AWS_REGION="us-east-1"
         ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        RANCHER_URL="https://rancher.mattaltun.co.uk"
-        // Get the project-id from Rancher UI
-        RANCHER_CONTEXT="petclinic-cluster:project-id" 
+        RANCHER_URL="https://petclinic.mattaltun.co.uk"
+        // Get the project-id from Rancher UI - petclinic-cluster:project-id
+        RANCHER_CONTEXT="c-p5pbm:p-dx9bn" 
         RANCHER_CREDS=credentials('rancher-petclinic-credentials')
     }
     stages {
@@ -3614,6 +3604,19 @@ git branch feature/msp-27
 git checkout feature/msp-27
 ```
 
+* Create a Kubernetes cluster using Rancher with RKE and new nodes in AWS (on one EC2 instance only) and name it as `petclinic-cluster`.
+
+```text
+Cluster Type      : Amazon EC2
+Name Prefix       : petclinic-k8s-instance
+Count             : 3
+etcd              : checked
+Control Plane     : checked
+Worker            : checked
+```
+
+* Create `petclinic-prod-ns` namespace on `petclinic-cluster` with Rancher.
+
 * Create a Jenkins Job and name it as `create-ecr-docker-registry-for-petclinic-prod` to create Docker Registry for `Production` manually on AWS ECR.
 
 ``` bash
@@ -3696,9 +3699,9 @@ pipeline {
         AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
         AWS_REGION="us-east-1"
         ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        RANCHER_URL="https://rancher.mattaltun.co.uk"
+        RANCHER_URL="https://petclinic.mattaltun.co.uk"
         // Get the project-id from Rancher UI
-        RANCHER_CONTEXT="c-rclgv:p-z8lsg" 
+        RANCHER_CONTEXT="c-rclgv:p-z8lsg"
         RANCHER_CREDS=credentials('rancher-petclinic-credentials')
     }
     stages {
@@ -3799,48 +3802,14 @@ git branch feature/msp-28
 git checkout feature/msp-28
 ```
 
-* Create a target group with name of `matt-petclinic-http-443-tg` with following setup and add the `petclinic application instances` to it.
+* Create an `A` record of `petclinic.mattaltun.co.uk` in your hosted zone (in our case `mattaltun.co.uk`) using AWS Route 53 domain registrar and bind it to your `petclinic cluster`.
 
-```text
-Target type         : instance
-Protocol            : HTTPS
-Port                : 443
-
-<!-- Health Checks Settings -->
-Protocol            : HTTPS
-Path                : /healthz
-Port                : traffic port
-Healthy threshold   : 3
-Unhealthy threshold : 3
-Timeout             : 5 seconds
-Interval            : 10 seoconds
-Success             : 200
-```
-
-* Create Application Load Balancer with name of `matt-petclinic-alb` using `matt-rke-alb-sg` security group with following settings and add `matt-petclinic-http-443-tg` target group to it.
-
-```text
-Scheme              : internet-facing
-IP address type     : ipv4
-
-<!-- Listeners-->
-Protocol            : HTTPS/HTTP
-Port                : 443/80
-Availability Zones  : Select AZs of RKE instances
-Target group        : `matt-petclinic-http-443-tg` target group
-```
-
-* Configure ALB Listener of HTTP on `Port 80` to redirect traffic to HTTPS on `Port 443`.
-
-* Create DNS A record for `rancher.mattaltun.co.uk` and 
-
-* Create an `A` record of `petclinic003.mattaltun.co.uk` in your hosted zone (in our case `mattaltun.co.uk`) using AWS Route 53 domain registrar and attach the `matt-petclinic-alb` application load balancer to it.
-
-* Configure TLS(SSL) certificate for `petclinic003.mattaltun.co.uk` using `cert-manager` on petclinic K8s cluster with the following steps.
+* Configure TLS(SSL) certificate for `petclinic.mattaltun.co.uk` using `cert-manager` on petclinic K8s cluster with the following steps.
 
 * Log into Jenkins Server and configure the `kubectl` to connect to petclinic cluster by getting the `Kubeconfig` file from Rancher and save it as `$HOME/.kube/config` or set `KUBECONFIG` environment variable.
 
 ```bash
+#create petclinic-config file under home folder(/home/ec2-user).
 nano petclinic-config
 # paste the content of kubeconfig file and save it.
 chmod 400 petclinic-config
