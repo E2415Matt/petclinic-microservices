@@ -3510,8 +3510,13 @@ pipeline {
         AWS_REGION="us-east-1"
         ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
         RANCHER_URL="https://petclinic.mattaltun.co.uk"
+<<<<<<< HEAD
         // Get the project-id from Rancher UI
         RANCHER_CONTEXT="petclinic-cluster:project-id" 
+=======
+        // Get the project-id from Rancher UI - petclinic-cluster:project-id
+        RANCHER_CONTEXT="c-p5pbm:p-dx9bn" 
+>>>>>>> feature/msp-26
         RANCHER_CREDS=credentials('rancher-petclinic-credentials')
     }
     stages {
