@@ -3626,7 +3626,7 @@ Worker            : checked
 
 ``` bash
 PATH="$PATH:/usr/local/bin"
-APP_REPO_NAME="clarusway-repo/petclinic-app-prod"
+APP_REPO_NAME="matt-repo/petclinic-app-prod"
 AWS_REGION="us-east-1"
 
 aws ecr create-repository \
@@ -3700,7 +3700,7 @@ pipeline {
     environment {
         PATH=sh(script:"echo $PATH:/usr/local/bin", returnStdout:true).trim()
         APP_NAME="petclinic"
-        APP_REPO_NAME="clarusway-repo/petclinic-app-prod"
+        APP_REPO_NAME="matt-repo/petclinic-app-prod"
         AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
         AWS_REGION="us-east-1"
         ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
